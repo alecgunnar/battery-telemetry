@@ -2,4 +2,4 @@
 *.jar
 
 /bin
-/dist/**/*.class
+/dist
