@@ -9,7 +9,7 @@
 package Sunseeker.Telemetry.Battery;
 
 class Main {
-	public static void main(String[] args) {
-		Serial.listAllPorts();
-	}
+    public static void main(String[] args) {
+        Serial.listAllPorts();
+    }
 }
