@@ -9,15 +9,17 @@
 package Sunseeker.Telemetry.Battery;
 
 import java.util.*;
+import java.io.InputStream;
 import gnu.io.*;
 
-class Serial {
+class Serial implements SerialPortEventListener {
     private final int TIMEOUT = 2000;
 
     private HashMap ports;
     private CommPortIdentifier activePort;
     private String[] portNames = null;
     private SerialPort connection;
+    private InputStream input;
 
     Serial () {
         ports      = new HashMap();
@@ -76,11 +78,29 @@ class Serial {
         return activePort.getName();
     }
 
+    public void serialEvent(SerialPortEvent e) {
+        if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+            int character;
+            try {
+                character = input.read();
+                System.out.print((char) character);
+            } catch (Exception exc) { }
+        }
+    }
+
     private boolean connect (CommPortIdentifier port) {
+        disconnect();
+
         try {
             connection = (SerialPort) port.open("TigerControlPanel", TIMEOUT);
+
+            connection.addEventListener(this);
+            connection.notifyOnDataAvailable(true);
+            connection.setSerialPortParams(38400, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
+            input = connection.getInputStream();
         } catch (Exception e) {
-            connection = null;
+            disconnect();
             return false;
         }
 
@@ -90,6 +110,18 @@ class Serial {
     }
 
     private void disconnect () {
-        connection.close();
+        if (connection != null) {
+            connection.removeEventListener();
+            connection.close();
+            connection = null;
+        }
+
+        if (input != null) {
+            try {
+                input.close();
+            } catch (Exception e) { }
+        }
+
+        input = null;
     }
 }
