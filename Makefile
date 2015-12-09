@@ -5,7 +5,7 @@ BIN  = bin/
 NS   = Sunseeker
 
 LIBS  = $(LIB)RXTXComm.jar
-FILES = $(SRC)main.java $(SRC)serial.java
+FILES = $(SRC)main.java $(SRC)serial.java $(SRC)Interface/TelemetryInterface.java $(SRC)Interface/PortSelectionDialog.java
 JAR   = $(BIN)BatteryReceiver.jar
 
 .PHONY: compile jar
@@ -16,7 +16,7 @@ compile:
 	javac -classpath $(LIBS) -d $(DIST) $(FILES)
 
 jar:
-	jar cvfe $(JAR) Sunseeker.Telemetry.Battery.Main -C $(DIST) $(NS)
+	jar cfe $(JAR) Sunseeker.Telemetry.Battery.Main -C $(DIST) $(NS)
 
 run:
 	@java -jar $(JAR)

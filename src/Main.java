@@ -9,7 +9,12 @@
 package Sunseeker.Telemetry.Battery;
 
 class Main {
-    public static void main(String[] args) {
-        Serial.listAllPorts();
+    public static void main (String[] args) {
+        Serial serialComm              = new Serial();
+        TelemetryInterface telIntf     = new TelemetryInterface(serialComm);
+        PortSelectionDialog portSelDia = new PortSelectionDialog(telIntf, serialComm);
+
+        telIntf.setPortSelectionDia(portSelDia);
+        telIntf.setVisible(true);
     }
 }

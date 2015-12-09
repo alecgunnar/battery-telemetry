@@ -8,27 +8,88 @@
 
 package Sunseeker.Telemetry.Battery;
 
-import java.util.Enumeration;
+import java.util.*;
 import gnu.io.*;
 
 class Serial {
-    private static Enumeration ports = null;
+    private final int TIMEOUT = 2000;
 
-    /**
-     * With help from:
-     * https://www.henrypoon.com/blog/2011/01/01/serial-communication-in-java-with-example-program/
-     */
-    public static void listAllPorts () {
-        System.out.println("Here are all of the serial ports:");
+    private HashMap ports;
+    private CommPortIdentifier activePort;
+    private String[] portNames = null;
+    private SerialPort connection;
 
-        ports = CommPortIdentifier.getPortIdentifiers();
+    Serial () {
+        ports      = new HashMap();
+        connection = null;
+    }
 
-        while (ports.hasMoreElements()) {
-            CommPortIdentifier curPort = (CommPortIdentifier) ports.nextElement();
+    public HashMap getPorts () {
+        Enumeration allPorts = CommPortIdentifier.getPortIdentifiers();
+        CommPortIdentifier p;
 
-            if (curPort.getPortType() == CommPortIdentifier.PORT_SERIAL) {
-                System.out.println(curPort.getName());
-            }
+        ports.clear();
+
+        while (allPorts.hasMoreElements()) {
+            p = (CommPortIdentifier) allPorts.nextElement();
+
+            if (p.getPortType() == CommPortIdentifier.PORT_SERIAL)
+                ports.put(p.getName(), p);
         }
+
+        return ports;
+    }
+
+    public String[] getPortNames () {
+        getPorts();
+
+        portNames = new String[ports.size()];
+
+        Iterator i = ports.entrySet().iterator();
+        Map.Entry e;
+        int index = 0;
+
+        while (i.hasNext()) {
+            e = (Map.Entry) i.next();
+
+            portNames[index++] = (String) e.getKey();
+        }
+
+        return portNames;
+    }
+
+    public boolean setActivePort (String name) {
+        if (name == null) {
+            if (connection != null)
+                disconnect();
+
+            return true;
+        }
+
+        return connect((CommPortIdentifier) ports.get(name));
+    }
+
+    public String getActivePortName () {
+        if (activePort == null)
+            return null;
+
+        return activePort.getName();
+    }
+
+    private boolean connect (CommPortIdentifier port) {
+        try {
+            connection = (SerialPort) port.open("TigerControlPanel", TIMEOUT);
+        } catch (Exception e) {
+            connection = null;
+            return false;
+        }
+
+        activePort = port;
+
+        return true;
+    }
+
+    private void disconnect () {
+        connection.close();
     }
 }
