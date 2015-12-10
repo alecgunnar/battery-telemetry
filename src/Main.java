@@ -10,11 +10,13 @@ package Sunseeker.Telemetry.Battery;
 
 class Main {
     public static void main (String[] args) {
-        Serial serialComm              = new Serial();
-        TelemetryInterface telIntf     = new TelemetryInterface(serialComm);
-        PortSelectionDialog portSelDia = new PortSelectionDialog(telIntf, serialComm);
+        Serial serialComm      = new Serial();
+        MainInterface mainIntf = new MainInterface();
+        PortInterface portIntf = new PortInterface();
 
-        telIntf.setPortSelectionDia(portSelDia);
-        telIntf.setVisible(true);
+        SerialHandler serialHandler   = new SerialHandler(serialComm, mainIntf, portIntf);
+        SessionHandler sessionHandler = new SessionHandler(mainIntf);
+
+        mainIntf.setVisible(true);
     }
 }

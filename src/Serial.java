@@ -13,13 +13,28 @@ import java.io.InputStream;
 import gnu.io.*;
 
 class Serial implements SerialPortEventListener {
-    private final int TIMEOUT = 2000;
+    // Configuration
+    final private static int TIMEOUT = 2000;
+
+    // Events
+    final public static String EVENT_NEW_PAGE = "new_page";
+
+    // Page delimiters
+    final private static String PAGE_START = "LT1 00";
+    final private static String PAGE_END   = "ERR 31";
+
+    // Status
+    boolean pageStarted = false;
 
     private HashMap ports;
     private CommPortIdentifier activePort;
     private String[] portNames = null;
     private SerialPort connection;
     private InputStream input;
+
+    // Page and line data
+    private String line = "";
+    private String page;
 
     Serial () {
         ports      = new HashMap();
@@ -71,7 +86,7 @@ class Serial implements SerialPortEventListener {
         return connect((CommPortIdentifier) ports.get(name));
     }
 
-    public String getActivePortName () {
+    public String getActivePort () {
         if (activePort == null)
             return null;
 
@@ -81,18 +96,37 @@ class Serial implements SerialPortEventListener {
     public void serialEvent(SerialPortEvent e) {
         if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
             int character;
+
             try {
                 character = input.read();
-                System.out.print((char) character);
+                line += (char) character;
+
+                if (character == '\n') {
+                    if (pageStarted)
+                        page += line;
+
+                    switch (line.substring(0, 6)) {
+                        case PAGE_START:
+                            page        = "";
+                            pageStarted = true;
+                            break;
+                        case PAGE_END:
+                            if (pageStarted) {
+                                Dispatcher.trigger(EVENT_NEW_PAGE, page);
+                                pageStarted = false;
+                            }
+                            break;
+                    }
+
+                    line = "";
+                }
             } catch (Exception exc) { }
         }
     }
 
     private boolean connect (CommPortIdentifier port) {
-        disconnect();
-
         try {
-            connection = (SerialPort) port.open("TigerControlPanel", TIMEOUT);
+            connection = (SerialPort) port.open("BatteryReceiverPanel", TIMEOUT);
 
             connection.addEventListener(this);
             connection.notifyOnDataAvailable(true);
