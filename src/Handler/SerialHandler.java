@@ -15,16 +15,18 @@ import java.awt.event.ActionEvent;
 
 class SerialHandler implements Listener, ActionListener {
     // Menu option commands
-    final String ACTION_CONNECT    = "connect";
-    final String ACTION_DISCONNECT = "disconnect";
+    final private String ACTION_CONNECT    = "connect";
+    final private String ACTION_DISCONNECT = "disconnect";
 
-    // Evemts
-    final static String EVENT_CONNECTION = "connection";
+    // Events
+    final public static String EVENT_CONNECTION = "connection";
 
     // Status messages
-    final String STATUS_CONNECTED    = "Connected to serial port ";
-    final String STATUS_ERROR        = "Could not connect to serial port!";
-    final String STATUS_DISCONNECTED = "Disconnected from serial port.";
+    final private String STATUS_CONNECTED    = "Connected to serial port, waiting for data.";
+    final private String STATUS_ERROR        = "Could not connect to serial port!";
+    final private String STATUS_DISCONNECTED = "Disconnected from serial port.";
+    final private String STATUS_PAGE_STARTED = "Started receiving a page.";
+    final private String STATUS_PAGE_WAIT    = "Waiting for next page.";
 
     // Dependencies
     Serial serial;
@@ -55,7 +57,7 @@ class SerialHandler implements Listener, ActionListener {
                 if (port != null) {
                     if (serial.setActivePort(port)) {
                         updateConnectionState(true);
-                        mainIntf.updateStatus(STATUS_CONNECTED + port);
+                        mainIntf.updateStatus(STATUS_CONNECTED);
                     } else {
                         mainIntf.updateStatus(STATUS_ERROR);
                     }
@@ -71,8 +73,11 @@ class SerialHandler implements Listener, ActionListener {
 
     public void triggered(Event e) {
         switch (e.getEvent()) {
-            case Serial.EVENT_NEW_PAGE:
-                System.out.println((String) e.getData());
+            case Serial.EVENT_PAGE_START:
+                mainIntf.updateStatus(STATUS_PAGE_STARTED);
+                break;
+            case Serial.EVENT_PAGE_COMPLETE:
+                mainIntf.updateStatus(STATUS_PAGE_WAIT);
                 break;
         }
     }
@@ -95,7 +100,8 @@ class SerialHandler implements Listener, ActionListener {
     }
 
     private void initializeListeners () {
-        Dispatcher.subscribe(Serial.EVENT_NEW_PAGE, this);
+        Dispatcher.subscribe(Serial.EVENT_PAGE_START, this);
+        Dispatcher.subscribe(Serial.EVENT_PAGE_COMPLETE, this);
     }
 
     private void updateConnectionState (boolean state) {

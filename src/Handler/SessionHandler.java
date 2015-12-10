@@ -17,25 +17,25 @@ import java.io.IOException;
 
 class SessionHandler implements ActionListener, Listener {
     // Menu option commands
-    final String ACTION_NEW_SESS = "new_sess";
-    final String ACTION_END_SESS = "end_sess";
+    final private String ACTION_NEW_SESS = "new_sess";
+    final private String ACTION_END_SESS = "end_sess";
 
     // Dependencies
-    MainInterface mainIntf;
+    private MainInterface mainIntf;
 
     // Status
-    boolean connected;
-    boolean activeSession;
+    private boolean connected;
+    private boolean activeSession;
 
     // Session
-    File sessionFile;
+    private File sessionFile;
 
     // Menu options
-    JMenuItem newSessionItem;
-    JMenuItem endSessionItem;
+    private JMenuItem newSessionItem;
+    private JMenuItem endSessionItem;
 
     // File chooser
-    JFileChooser fileChooser = new JFileChooser();
+    private JFileChooser fileChooser = new JFileChooser();
 
     SessionHandler (MainInterface mainI) {
         mainIntf  = mainI;

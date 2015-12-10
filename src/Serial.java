@@ -17,7 +17,8 @@ class Serial implements SerialPortEventListener {
     final private static int TIMEOUT = 2000;
 
     // Events
-    final public static String EVENT_NEW_PAGE = "new_page";
+    final public static String EVENT_PAGE_START    = "page_start";
+    final public static String EVENT_PAGE_COMPLETE = "page_complete";
 
     // Page delimiters
     final private static String PAGE_START = "LT1 00";
@@ -26,9 +27,12 @@ class Serial implements SerialPortEventListener {
     // Status
     boolean pageStarted = false;
 
+    // Available ports
     private HashMap ports;
-    private CommPortIdentifier activePort;
     private String[] portNames = null;
+
+    // Serial connection
+    private CommPortIdentifier activePort;
     private SerialPort connection;
     private InputStream input;
 
@@ -107,12 +111,13 @@ class Serial implements SerialPortEventListener {
 
                     switch (line.substring(0, 6)) {
                         case PAGE_START:
-                            page        = "";
+                            Dispatcher.trigger(EVENT_PAGE_START);
+                            page        = line;
                             pageStarted = true;
                             break;
                         case PAGE_END:
                             if (pageStarted) {
-                                Dispatcher.trigger(EVENT_NEW_PAGE, page);
+                                Dispatcher.trigger(EVENT_PAGE_COMPLETE, page);
                                 pageStarted = false;
                             }
                             break;

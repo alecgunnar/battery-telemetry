@@ -16,7 +16,5 @@ class Main {
 
         SerialHandler serialHandler   = new SerialHandler(serialComm, mainIntf, portIntf);
         SessionHandler sessionHandler = new SessionHandler(mainIntf);
-
-        mainIntf.setVisible(true);
     }
 }
