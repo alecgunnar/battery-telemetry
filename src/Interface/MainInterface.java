@@ -47,7 +47,6 @@ class MainInterface extends JFrame {
         layout = new SpringLayout();
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(WIDTH, HEIGHT));
         setLocationRelativeTo(null);
         setLayout(layout);
 
@@ -57,13 +56,11 @@ class MainInterface extends JFrame {
         createMenuBar();
         createMainPanel();
         createStatusLabel();
-
-        // Let it be
-        setVisible(true);
     }
 
     public void addMenu (JMenu menu) {
         menuBar.add(menu);
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
     }
 
     public void updateStatus (String status) {

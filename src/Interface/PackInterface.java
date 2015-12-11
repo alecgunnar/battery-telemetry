@@ -34,6 +34,8 @@ class PackInterface extends JPanel implements Listener {
 
     // Layout
     private SpringLayout layout;
+    private Component prevLabel = this;
+    private Component prevValue = this;
 
     // Data files
     private JLabel maxVoltage;
@@ -75,43 +77,28 @@ class PackInterface extends JPanel implements Listener {
     }
 
     private void createDataFields () {
-        JLabel maxV, minV, diffV, totV, avgV;
-
-        maxV  = new JLabel(MAX_VOLTAGE);
-        minV  = new JLabel(MIN_VOLTAGE);
-        diffV = new JLabel(DIFF_VOLTAGE);
-        totV  = new JLabel(TOT_VOLTAGE);
-        avgV  = new JLabel(AVG_VOLTAGE);
-
-        add(maxV);
-        add(minV);
-        add(diffV);
-        add(totV);
-        add(avgV);
-
-        labelConstraint(maxV, this);
-        labelConstraint(minV, maxV);
-        labelConstraint(diffV, minV);
-        labelConstraint(totV, diffV);
-        labelConstraint(avgV, totV);
-
         maxVoltage  = new JLabel(INITIAL_VOLTAGE);
         minVoltage  = new JLabel(INITIAL_VOLTAGE);
         diffVoltage = new JLabel(INITIAL_VOLTAGE);
         totVoltage  = new JLabel(INITIAL_VOLTAGE);
         avgVoltage  = new JLabel(INITIAL_VOLTAGE);
 
-        add(maxVoltage);
-        add(minVoltage);
-        add(diffVoltage);
-        add(totVoltage);
-        add(avgVoltage);
+        addDataField(new JLabel(MAX_VOLTAGE), maxVoltage);
+        addDataField(new JLabel(MIN_VOLTAGE), minVoltage);
+        addDataField(new JLabel(DIFF_VOLTAGE), diffVoltage);
+        addDataField(new JLabel(TOT_VOLTAGE), totVoltage);
+        addDataField(new JLabel(AVG_VOLTAGE), avgVoltage);
+    }
 
-        valueConstraint(maxVoltage, this);
-        valueConstraint(minVoltage, maxVoltage);
-        valueConstraint(diffVoltage, minVoltage);
-        valueConstraint(totVoltage, diffVoltage);
-        valueConstraint(avgVoltage, totVoltage);
+    private void addDataField (JLabel label, JLabel value) {
+        add(label);
+        add(value);
+
+        labelConstraint(label, prevLabel);
+        valueConstraint(value, prevValue);
+
+        prevLabel = label;
+        prevValue = value;
     }
 
     private void labelConstraint (Component comp, Component above) {

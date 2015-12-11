@@ -23,6 +23,7 @@ class Serial implements SerialPortEventListener {
     // Delimiters
     final private static String PAGE_START = "LT1 00";
     final private static String PAGE_END   = "ISH 00";
+    final private static int LINE_HEAD_LEN = 6;
     final public static char CAR_RET       = '\r';
     final public static char LIN_FED       = '\n';
     final public static char LINE_END      = LIN_FED;
@@ -114,7 +115,7 @@ class Serial implements SerialPortEventListener {
             if (pageStarted)
                 page += line;
 
-            switch (line.substring(0, 6)) {
+            switch (line.substring(0, LINE_HEAD_LEN)) {
                 case PAGE_START:
                     Dispatcher.trigger(EVENT_PAGE_START);
                     page        = line;

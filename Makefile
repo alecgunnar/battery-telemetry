@@ -16,7 +16,7 @@ compile:
 	javac -classpath $(LIBS) -d $(DIST) $(FILES)
 
 jar:
-	jar cfe $(JAR) Sunseeker.Telemetry.Battery.Main -C $(DIST) $(NS)
+	jar cfm $(JAR) manifest.txt -C $(DIST) $(NS)
 
 run:
 	@java -jar $(JAR)
