@@ -59,7 +59,7 @@ class PackInterface extends JPanel implements Listener {
 
     public void triggered (Event e) {
         switch (e.getEvent()) {
-            case PageHandler.EVENT_NEW_PAGE:
+            case PageHandler.EVENT_NEW_PACKS:
                 Pack[] packs = (Pack[]) e.getData();
                 Pack pack    = packs[packNumber - 1];
 
@@ -73,7 +73,7 @@ class PackInterface extends JPanel implements Listener {
     }
 
     private void initializeListeners () {
-        Dispatcher.subscribe(PageHandler.EVENT_NEW_PAGE, this);
+        Dispatcher.subscribe(PageHandler.EVENT_NEW_PACKS, this);
     }
 
     private void createDataFields () {
