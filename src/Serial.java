@@ -20,30 +20,28 @@ class Serial implements SerialPortEventListener {
     final public static String EVENT_PAGE_START    = "page_start";
     final public static String EVENT_PAGE_COMPLETE = "page_complete";
 
-    // Page delimiters
+    // Delimiters
     final private static String PAGE_START = "LT1 00";
-    final private static String PAGE_END   = "ERR 31";
+    final private static String PAGE_END   = "ISH 00";
+    final public static char CAR_RET       = '\r';
+    final public static char LIN_FED       = '\n';
+    final public static char LINE_END      = LIN_FED;
 
     // Status
     boolean pageStarted = false;
 
     // Available ports
-    private HashMap ports;
+    private HashMap ports = new HashMap();
     private String[] portNames = null;
 
     // Serial connection
     private CommPortIdentifier activePort;
-    private SerialPort connection;
     private InputStream input;
+    private SerialPort connection = null;
 
     // Page and line data
     private String line = "";
-    private String page;
-
-    Serial () {
-        ports      = new HashMap();
-        connection = null;
-    }
+    private String page = "";
 
     public HashMap getPorts () {
         Enumeration allPorts = CommPortIdentifier.getPortIdentifiers();
@@ -67,8 +65,8 @@ class Serial implements SerialPortEventListener {
         portNames = new String[ports.size()];
 
         Iterator i = ports.entrySet().iterator();
+        int index  = 0;
         Map.Entry e;
-        int index = 0;
 
         while (i.hasNext()) {
             e = (Map.Entry) i.next();
@@ -99,33 +97,38 @@ class Serial implements SerialPortEventListener {
 
     public void serialEvent(SerialPortEvent e) {
         if (e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-            int character;
-
             try {
-                character = input.read();
-                line += (char) character;
-
-                if (character == '\n') {
-                    if (pageStarted)
-                        page += line;
-
-                    switch (line.substring(0, 6)) {
-                        case PAGE_START:
-                            Dispatcher.trigger(EVENT_PAGE_START);
-                            page        = line;
-                            pageStarted = true;
-                            break;
-                        case PAGE_END:
-                            if (pageStarted) {
-                                Dispatcher.trigger(EVENT_PAGE_COMPLETE, page);
-                                pageStarted = false;
-                            }
-                            break;
-                    }
-
-                    line = "";
-                }
+                while (input.available() > 0)
+                    putChar((char) ((int) input.read()));
             } catch (Exception exc) { }
+        }
+    }
+
+    private void putChar (char next) {
+        if (next == CAR_RET)
+            return;
+
+        line += next;
+
+        if (next == LINE_END) {
+            if (pageStarted)
+                page += line;
+
+            switch (line.substring(0, 6)) {
+                case PAGE_START:
+                    Dispatcher.trigger(EVENT_PAGE_START);
+                    page        = line;
+                    pageStarted = true;
+                    break;
+                case PAGE_END:
+                    if (pageStarted) {
+                        Dispatcher.trigger(EVENT_PAGE_COMPLETE, page);
+                        pageStarted = false;
+                    }
+                    break;
+            }
+
+            line = "";
         }
     }
 

@@ -15,18 +15,18 @@ import java.awt.event.ActionEvent;
 
 class SerialHandler implements Listener, ActionListener {
     // Menu option commands
-    final private String ACTION_CONNECT    = "connect";
-    final private String ACTION_DISCONNECT = "disconnect";
+    private final String ACTION_CONNECT    = "connect";
+    private final String ACTION_DISCONNECT = "disconnect";
 
     // Events
-    final public static String EVENT_CONNECTION = "connection";
+    public final static String EVENT_CONNECTION = "connection";
 
     // Status messages
-    final private String STATUS_CONNECTED    = "Connected to serial port, waiting for data.";
-    final private String STATUS_ERROR        = "Could not connect to serial port!";
-    final private String STATUS_DISCONNECTED = "Disconnected from serial port.";
-    final private String STATUS_PAGE_STARTED = "Started receiving a page.";
-    final private String STATUS_PAGE_WAIT    = "Waiting for next page.";
+    private final String STATUS_CONNECTED    = "Connected to serial port, waiting for data.";
+    private final String STATUS_ERROR        = "Could not connect to serial port.";
+    private final String STATUS_DISCONNECTED = "Disconnected from serial port.";
+    private final String STATUS_PAGE_STARTED = "Receiving data...";
+    private final String STATUS_PAGE_WAIT    = "Waiting for more data...";
 
     // Dependencies
     Serial serial;
@@ -71,7 +71,7 @@ class SerialHandler implements Listener, ActionListener {
         }
     }
 
-    public void triggered(Event e) {
+    public void triggered (Event e) {
         switch (e.getEvent()) {
             case Serial.EVENT_PAGE_START:
                 mainIntf.updateStatus(STATUS_PAGE_STARTED);

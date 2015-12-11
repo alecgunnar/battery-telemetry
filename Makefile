@@ -5,7 +5,7 @@ BIN  = bin/
 NS   = Sunseeker
 
 LIBS  = $(LIB)RXTXComm.jar
-FILES = $(SRC)main.java $(SRC)serial.java $(SRC)Interface/MainInterface.java $(SRC)Interface/PortInterface.java $(SRC)Handler/SerialHandler.java $(SRC)Handler/SessionHandler.java $(SRC)Event/Dispatcher.java $(SRC)Event/Event.java $(SRC)Event/Listener.java
+FILES = $(SRC)Main.java $(SRC)Serial.java $(SRC)Pack.java $(SRC)Interface/MainInterface.java $(SRC)Interface/PortInterface.java $(SRC)Interface/PackInterface.java $(SRC)Handler/SerialHandler.java $(SRC)Handler/SessionHandler.java $(SRC)Handler/PageHandler.java $(SRC)Event/Dispatcher.java $(SRC)Event/Event.java $(SRC)Event/Listener.java
 JAR   = $(BIN)BatteryReceiver.jar
 
 .PHONY: compile jar

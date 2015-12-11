@@ -17,8 +17,8 @@ import java.io.IOException;
 
 class SessionHandler implements ActionListener, Listener {
     // Menu option commands
-    final private String ACTION_NEW_SESS = "new_sess";
-    final private String ACTION_END_SESS = "end_sess";
+    private final String ACTION_NEW_SESS = "new_sess";
+    private final String ACTION_END_SESS = "end_sess";
 
     // Dependencies
     private MainInterface mainIntf;
@@ -58,7 +58,7 @@ class SessionHandler implements ActionListener, Listener {
     }
 
     // Global events
-    public void triggered(Event e) {
+    public void triggered (Event e) {
         switch (e.getEvent()) {
             case SerialHandler.EVENT_CONNECTION:
                 connected = (boolean) e.getData();
