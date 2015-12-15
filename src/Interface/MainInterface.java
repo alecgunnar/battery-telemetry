@@ -82,7 +82,7 @@ class MainInterface extends JFrame {
         contentPane.add(packsPanel);
 
         layout.putConstraint(SpringLayout.NORTH, packsPanel, PADDING, SpringLayout.NORTH, menuBar);
-        layout.putConstraint(SpringLayout.SOUTH, packsPanel, PADDING * -4, SpringLayout.SOUTH, contentPane);
+        layout.putConstraint(SpringLayout.SOUTH, packsPanel, -1 * (HEIGHT / 2), SpringLayout.SOUTH, contentPane);
         fullWidthConstraint(packsPanel);
 
         packsPanel.add(new PackInterface());
