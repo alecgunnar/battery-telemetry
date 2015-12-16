@@ -1,17 +1,24 @@
 <project>
+
+	<property name="src_dir" value="src" />
+	<property name="build_dir" value="build" />
+	<property name="build.classes_dir" value="${build_dir}/classes/" />
+	<property name="build.jar_dir" value="${build_dir}/jar/" />
+	<property name="build.jar_file" value="BatteryTelemetry.jar" />
+	<property name="build.jar_fqn" value="${build.jar_dir}${build.jar_file}" />
+
 	<target name="clean">
-		<delete dir="bin" />
-		<delete dir="build" />
+		<delete dir="${build.classes_dir}" />
 	</target>
 
 	<target name="compile">
-		<mkdir dir="build/classes" />
-		<javac srcdir="src" destdir="build" />
+		<mkdir dir="${build.classes_dir}" />
+		<javac srcdir="${src_dir}" destdir="${build.classes_dir}" />
 	</target>
 
 	<target name="jar">
-		<mkdir dir="build/jar" />
-		<jar destfile="build/jar/BatteryTelemetry.jar" basedir="build/classes">
+		<mkdir dir="${build.jar_dir}" />
+		<jar destfile="${build.jar_fqn}" basedir="${build.classes_dir}">
 			<manifest>
 				<attribute name="Main-Class" value="Sunseeker.Telemetry.Battery.Main" />
 			</manifest>
@@ -19,6 +26,7 @@
 	</target>
 
 	<target name="run">
-		<java jar="build/jar/BatteryTelemetry.jar" fork="true" />
+		<java jar="${build.jar_fqn}" fork="true" />
 	</target>
+
 </project>
