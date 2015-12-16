@@ -1,0 +1,24 @@
+<project>
+	<target name="clean">
+		<delete dir="bin" />
+		<delete dir="build" />
+	</target>
+
+	<target name="compile">
+		<mkdir dir="build/classes" />
+		<javac srcdir="src" destdir="build" />
+	</target>
+
+	<target name="jar">
+		<mkdir dir="build/jar" />
+		<jar destfile="build/jar/BatteryTelemetry.jar" basedir="build/classes">
+			<manifest>
+				<attribute name="Main-Class" value="Sunseeker.Telemetry.Battery.Main" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run">
+		<java jar="build/jar/BatteryTelemetry.jar" fork="true" />
+	</target>
+</project>

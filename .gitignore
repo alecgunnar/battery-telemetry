@@ -1,5 +1,3 @@
 .DS_Store
-*.jar
 
-/bin
-/dist
+/build
