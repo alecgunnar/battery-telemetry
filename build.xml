@@ -8,7 +8,7 @@
 	<property name="build.jar_fqn" value="${build.jar_dir}${build.jar_file}" />
 
 	<target name="clean">
-		<delete dir="${build.classes_dir}" />
+		<delete dir="${build_dir}" />
 	</target>
 
 	<target name="compile">
