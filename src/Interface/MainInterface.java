@@ -30,8 +30,13 @@ class MainInterface extends JFrame {
     private final int HEIGHT        = 600;
     public final static int PADDING = 10;
 
-    // Messages/labels
-    private final String INITIAL_STATUS = "Please choose a serial port to begin.";
+    // Status messages
+    private final String STATUS_INITIAL      = "Please choose a serial port to begin.";
+    private final String STATUS_CONNECTED    = "Connected to serial port, waiting for data.";
+    private final String STATUS_ERROR        = "Could not connect to serial port.";
+    private final String STATUS_DISCONNECTED = "Disconnected from serial port.";
+    private final String STATUS_PAGE_STARTED = "Receiving data...";
+    private final String STATUS_PAGE_WAIT    = "Waiting for more data...";
 
     // Parts of the interface
     private Container contentPane;
@@ -40,31 +45,49 @@ class MainInterface extends JFrame {
     private JPanel packsPanel;
     private JLabel statusLabel;
 
+    private PackInterface[] packs = new PackInterface[BatteryTelemetry.NUM_PACKS];
+
     MainInterface () {
         super("Battery Receiver");
 
-        // Interface setup
+        // Set the layout
         layout = new SpringLayout();
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
         setLayout(layout);
 
         contentPane = getContentPane();
 
-        // Create parts of the interface
-        createMenuBar();
-        createMainPanel();
-        createStatusLabel();
+        // Create the pack panels
+        packs[0] = new PackInterface();
+        packs[1] = new PackInterface();
+
+        // Set other options
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+
+        buildInterface();
     }
 
     public void addMenu (JMenu menu) {
         menuBar.add(menu);
-        setMinimumSize(new Dimension(WIDTH, HEIGHT));
+    }
+
+    public void updatePackData (int which, Pack data) {
+
+    }
+
+    public void updateShuntCurrent (double current) {
+
     }
 
     public void updateStatus (String status) {
         statusLabel.setText(status);
+    }
+
+    private void buildInterface () {
+        createMenuBar();
+        createMainPanel();
+        createShuntCurrentPanel();
+        createStatusLabel();
     }
 
     private void createMenuBar () {
@@ -85,12 +108,16 @@ class MainInterface extends JFrame {
         layout.putConstraint(SpringLayout.SOUTH, packsPanel, -1 * (HEIGHT / 2), SpringLayout.SOUTH, contentPane);
         fullWidthConstraint(packsPanel);
 
-        packsPanel.add(new PackInterface());
-        packsPanel.add(new PackInterface());
+        packsPanel.add(packs[0]);
+        packsPanel.add(packs[1]);
+    }
+
+    private void createShuntCurrentPanel () {
+        
     }
 
     private void createStatusLabel () {
-        statusLabel = new JLabel(INITIAL_STATUS);
+        statusLabel = new JLabel(STATUS_INITIAL);
         statusLabel.setHorizontalAlignment(JLabel.CENTER);
 
         contentPane.add(statusLabel);

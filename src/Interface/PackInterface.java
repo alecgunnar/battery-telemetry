@@ -16,9 +16,17 @@ import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Component;
 
-class PackInterface extends JPanel implements Listener {
+import agc.events.*;
+
+class PackInterface extends JPanel {
+    // Instances
+    private final static PackInterface instance1 = new PackInterface(1);
+    private final static PackInterface instance2 = new PackInterface(2);
+
+    public final static String PACK1_INSTANCE = "inst_1";
+    public final static String PACK2_INSTANCE = "inst_2";
+
     // Pack information
-    private static int count = 1;
     private final int packNumber;
 
     // Field labels
@@ -44,36 +52,21 @@ class PackInterface extends JPanel implements Listener {
     private JLabel totVoltage;
     private JLabel avgVoltage;
 
-    PackInterface () {
-        packNumber = count;
-        count++;
+    public static PackInterface getInstance (String which) {
+        if (which == PACK1_INSTANCE)
+            return instance1;
 
-        layout = new SpringLayout();
+        return instance2;
+    }
+
+    private PackInterface (int num) {
+        packNumber = num;
+        layout     = new SpringLayout();
 
         setBorder(BorderFactory.createTitledBorder("  Pack " + packNumber + "  "));
         setLayout(layout);
 
         createDataFields();
-        initializeListeners();
-    }
-
-    public void triggered (Event e) {
-        switch (e.getEvent()) {
-            case PageHandler.EVENT_NEW_PACKS:
-                Pack[] packs = (Pack[]) e.getData();
-                Pack pack    = packs[packNumber - 1];
-
-                maxVoltage.setText(pack.getMaxVoltage() + VOLT_UNIT_ABBR);
-                minVoltage.setText(pack.getMinVoltage() + VOLT_UNIT_ABBR);
-                diffVoltage.setText(pack.getDiffVoltage() + VOLT_UNIT_ABBR);
-                totVoltage.setText(pack.getTotalVoltage() + VOLT_UNIT_ABBR);
-                avgVoltage.setText(pack.getAverageVoltage() + VOLT_UNIT_ABBR);
-                break;
-        }
-    }
-
-    private void initializeListeners () {
-        Dispatcher.subscribe(PageHandler.EVENT_NEW_PACKS, this);
     }
 
     private void createDataFields () {

@@ -8,6 +8,7 @@
 
 package Sunseeker.Telemetry.Battery;
 
-interface Listener {
-	public void triggered(Event e);
+interface ISubscribableDataSource {
+    public String getNextPackVoltageData();
+    public String getNextPackShuntCurrent();
 }

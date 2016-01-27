@@ -12,40 +12,28 @@ import javax.swing.*;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.io.File;
-import java.io.IOException;
 
-class SessionHandler implements ActionListener, Listener {
+class SessionHandler implements ActionListener {
     // Menu option commands
     private final String ACTION_NEW_SESS = "new_sess";
     private final String ACTION_END_SESS = "end_sess";
-
-    // Dependencies
-    private MainInterface mainIntf;
 
     // Status
     private boolean connected;
     private boolean activeSession;
 
-    // Session
-    private File sessionFile;
-
     // Menu options
     private JMenuItem newSessionItem;
     private JMenuItem endSessionItem;
 
-    // File chooser
-    private JFileChooser fileChooser = new JFileChooser();
+    // Session interface
+    ISessionInterface sessIntf;
 
-    SessionHandler (MainInterface mainI) {
-        mainIntf  = mainI;
+    SessionHandler (ISessionInterface intf) {
         connected = false;
-
-        initializeMenu();
-        initializeListeners();
+        sessIntf  = intf;
     }
 
-    // Menu events
     public void actionPerformed (ActionEvent e) {
         switch (e.getActionCommand()) {
             case ACTION_NEW_SESS:
@@ -57,21 +45,7 @@ class SessionHandler implements ActionListener, Listener {
         }
     }
 
-    // Global events
-    public void triggered (Event e) {
-        switch (e.getEvent()) {
-            case SerialHandler.EVENT_CONNECTION:
-                connected = (boolean) e.getData();
-
-                if (activeSession && !connected)
-                    stopSession();
-
-                updateSessionState(activeSession);
-                break;
-        }
-    }
-
-    private void initializeMenu () {
+    public void initializeMenu (MainInterface mainIntf) {
         JMenu optionsMenu = new JMenu("Session");
         mainIntf.addMenu(optionsMenu);
 
@@ -87,29 +61,12 @@ class SessionHandler implements ActionListener, Listener {
         updateSessionState(false);
     }
 
-    private void initializeListeners () {
-        Dispatcher.subscribe(SerialHandler.EVENT_CONNECTION, this);
-    }
-
     private void startSession () {
-        int ret = fileChooser.showSaveDialog(mainIntf);
-
-        if (ret == JFileChooser.APPROVE_OPTION) {
-            sessionFile = fileChooser.getSelectedFile();
-
-            try {
-                updateSessionState(sessionFile.createNewFile());
-            } catch (IOException e) { }
-        }
+        
     }
 
     private void stopSession () {
-        if (!activeSession)
-            return;
 
-        sessionFile = null;
-
-        updateSessionState(false);
     }
 
     private void updateSessionState (boolean state) {

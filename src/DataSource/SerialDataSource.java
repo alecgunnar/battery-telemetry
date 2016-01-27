@@ -11,14 +11,17 @@ package Sunseeker.Telemetry.Battery;
 import java.util.*;
 import java.io.InputStream;
 import gnu.io.*;
+import javax.swing.*;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-class Serial implements SerialPortEventListener {
+class SerialDataSource implements SerialPortEventListener, ActionListener, ISubscribableDataSource {
+    // Menu option commands
+    private final String ACTION_CONNECT    = "connect";
+    private final String ACTION_DISCONNECT = "disconnect";
+
     // Configuration
     final private static int TIMEOUT = 2000;
-
-    // Events
-    final public static String EVENT_PAGE_START    = "page_start";
-    final public static String EVENT_PAGE_COMPLETE = "page_complete";
 
     // Delimiters
     final private static String PAGE_START = "LT1 00";
@@ -28,8 +31,11 @@ class Serial implements SerialPortEventListener {
     final public static char LIN_FED       = '\n';
     final public static char LINE_END      = LIN_FED;
 
+    // Port selection window
+    private PortInterface portIntf;
+
     // Status
-    boolean pageStarted = false;
+    private boolean pageStarted = false;
 
     // Available ports
     private HashMap ports = new HashMap();
@@ -43,6 +49,14 @@ class Serial implements SerialPortEventListener {
     // Page and line data
     private String line = "";
     private String page = "";
+
+    // Menu items
+    private JMenuItem connectItem;
+    private JMenuItem disconnectItem;
+
+    SerialDataSource (PortInterface intf) {
+        portIntf = intf;
+    }
 
     public HashMap getPorts () {
         Enumeration allPorts = CommPortIdentifier.getPortIdentifiers();
@@ -117,20 +131,54 @@ class Serial implements SerialPortEventListener {
 
             switch (line.substring(0, LINE_HEAD_LEN)) {
                 case PAGE_START:
-                    Dispatcher.trigger(EVENT_PAGE_START);
                     page        = line;
                     pageStarted = true;
                     break;
                 case PAGE_END:
-                    if (pageStarted) {
-                        Dispatcher.trigger(EVENT_PAGE_COMPLETE, page);
+                    if (pageStarted)
                         pageStarted = false;
-                    }
                     break;
             }
 
             line = "";
         }
+    }
+
+    public String getNextPackVoltageData () {
+        return "";
+    }
+
+    public String getNextPackShuntCurrent () {
+        return "";
+    }
+
+    public void actionPerformed (ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case ACTION_CONNECT:
+                String port = portIntf.trigger(getPortNames());
+
+                if (port != null)
+                    setActivePort(port);
+                break;
+            case ACTION_DISCONNECT:
+                setActivePort(null);
+                break;
+        }
+    }
+
+    public void initializeMenu (MainInterface mainIntf) {
+        JMenu optionsMenu = new JMenu("Connection");
+        mainIntf.addMenu(optionsMenu);
+
+        connectItem = new JMenuItem("Connect");
+        connectItem.setActionCommand(ACTION_CONNECT);
+        connectItem.addActionListener(this);
+        optionsMenu.add(connectItem);
+
+        disconnectItem = new JMenuItem("Disconnect");
+        disconnectItem.setActionCommand(ACTION_DISCONNECT);
+        disconnectItem.addActionListener(this);
+        optionsMenu.add(disconnectItem);
     }
 
     private boolean connect (CommPortIdentifier port) {
